@@ -1,0 +1,92 @@
+TodoItem,Label
+"Finish writing the presentation slides for next week's meeting",Productive
+"Research and buy a new smartphone",Productive
+"Call the insurance company to discuss the recent claim",Not-Productive
+"Review and sign the monthly utility bills",Productive
+"Book tickets for the annual company retreat",Productive
+"Renew the car insurance policy",Not-Productive
+"Prepare a grocery list for the weekly shopping",Productive
+"Update the family tree with the latest birth and marriage records",Productive
+"Attend the online webinar on digital marketing strategies",Not-Productive
+"Schedule a routine dental checkup",Productive
+"Organize the files in the document management system",Productive
+"Reach out to the landlord about the noisy neighbors",Productive
+"Sort out the overfNot-Productiveing email inbox",Productive
+"Plan a surprise birthday party for a friend",Productive
+"Sign up for the upcoming leadership training workshop",Productive
+"Check the status of the pending project deliverables",Productive
+"Take a break and go for a walk in the park",Not-Productive
+"Prepare for the upcoming tax filing deadline",Productive
+"Finish reading the assigned chapters for the literature class",Productive
+"Clean out the closet and declutter the wardrobe",Not-Productive
+"Plan a road trip for the summer vacation",Productive
+"Review the latest financial reports",Productive
+"Schedule a doctor's appointment for an annual checkup",Productive
+"Submit the final report to the supervisor",Productive
+"Plan a weekend getaway with family",Productive
+"Finish updating the resume for the job application",Productive
+"Attend the monthly book club meeting",Not-Productive
+"Prepare a grocery list for the weekly shopping",Productive
+"Reach out to the insurance agent to discuss the policy coverage",Productive
+"Schedule a maintenance appointment for the home appliances",Productive
+"Research and buy a new pair of running shoes",Not-Productive
+"Prepare a presentation on the latest industry trends",Productive
+"Book tickets for the annual company retreat",Productive
+"Plan a weekend getaway with family",Productive
+"Update the family tree with the latest birth and marriage records",Productive
+"Attend the monthly book club meeting",Not-Productive
+"Organize the files in the document management system",Productive
+"Reach out to the landlord about the noisy neighbors",Productive
+"Take a break and go for a walk in the park",Not-Productive
+"Schedule a doctor's appointment for an annual checkup",Productive
+"Prepare for the upcoming tax filing deadline",Productive
+"Finish reading the assigned chapters for the literature class",Productive
+"Clean out the closet and declutter the wardrobe",Not-Productive
+"Plan a road trip for the summer vacation",Productive
+"Review the latest financial reports",Productive
+"Schedule a maintenance appointment for the home appliances",Productive
+"Finish updating the resume for the job application",Productive
+"Attend the monthly book club meeting",Not-Productive
+"Prepare a grocery list for the weekly shopping",Productive
+"Research and buy a new pair of running shoes",Not-Productive
+"Plan a weekend getaway with family",Productive
+"Update the family tree with the latest birth and marriage records",Productive
+"Attend the monthly book club meeting",Not-Productive
+"Organize the files in the document management system",Productive
+"Reach out to the landlord about the noisy neighbors",Productive
+"Take a break and go for a walk in the park",Not-Productive
+"Schedule a doctor's appointment for an annual checkup",Productive
+"Prepare for the upcoming tax filing deadline",Productive
+"Finish reading the assigned chapters for the literature class",Productive
+"Clean out the closet and declutter the wardrobe",Not-Productive
+"Plan a road trip for the summer vacation",Productive
+"Review the latest financial reports",Productive
+"Schedule a maintenance appointment for the home appliances",Productive
+"Finish updating the resume for the job application",Productive
+"Attend the monthly book club meeting",Not-Productive
+"Prepare a grocery list for the weekly shopping",Productive
+"Research and buy a new pair of running shoes",Not-Productive
+"Plan a weekend getaway with family",Productive
+"Update the family tree with the latest birth and marriage records",Productive
+"Attend the monthly book club meeting",Not-Productive
+"Organize the files in the document management system",Productive
+"Reach out to the landlord about the noisy neighbors",Productive
+"Take a break and go for a walk in the park",Not-Productive
+"Schedule a doctor's appointment for an annual checkup",Productive
+"Prepare for the upcoming tax filing deadline",Productive
+"Finish reading the assigned chapters for the literature class",Productive
+"Clean out the closet and declutter the wardrobe",Not-Productive
+"Plan a road trip for the summer vacation",Productive
+"Review the latest financial reports",Productive
+"Schedule a maintenance appointment for the home appliances",Productive
+"Finish updating the resume for the job application",Productive
+"Attend the monthly book club meeting",Not-Productive
+"Prepare a grocery list for the weekly shopping",Productive
+"Research and buy a new pair of running shoes",Not-Productive
+"Plan a weekend getaway with family",Productive
+"Update the family tree with the latest birth and marriage records",Productive
+"Attend the monthly book club meeting",Not-Productive
+"Organize the files in the document management system",Productive
+"Reach out to the landlord about the noisy neighbors",Productive
+"Take a break and go for a walk in the park",Not-Productive
+"Schedule a doctor's appointment for an annual checkup",Productive
