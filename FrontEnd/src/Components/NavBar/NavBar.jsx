@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 let token=localStorage?.getItem('token');
+
+const user = JSON.parse(localStorage.getItem("user"));
 if(token){
 
   const {exp}=jwtDecode(token);
@@ -572,8 +574,8 @@ const NavBarReact = () => {
             <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
     {token ? (
       <Link
-        to="profile"
-        className="whitespace-nowrap text-base font-medium hover:text-gray-900"
+        to={`profile/${user.name}`} 
+       className="whitespace-nowrap text-base font-medium hover:text-gray-900"
       >
         Profile
       </Link>

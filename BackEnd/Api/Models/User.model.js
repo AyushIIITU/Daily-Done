@@ -5,6 +5,13 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
   },
+  skills:[
+    {
+      type:String,
+      required:true,
+      unique:true
+    }
+  ],
   avatar:{
     type:String,
     default:"/AnimalSVG/Ape.svg"

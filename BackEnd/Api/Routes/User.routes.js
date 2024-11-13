@@ -25,13 +25,14 @@ router.post("/", UserController.registerUser);
 
 router.post("/login",UserController.loginUser );
 
-router.get("/profile", UserController.getUser);
+router.get("/profile/:name", UserController.getUser);
 
 router.get("/visit/:id", jwtAuthMiddleware, UserController.visitUser);
 
 router.get("/fetchGithub",UserController.fetchYears);
 
 router.post("/fetchGithubYear",UserController.fetchDataForYear);
+router.patch("/addskill/:id",jwtAuthMiddleware,UserController.addSkill);
 
 
 

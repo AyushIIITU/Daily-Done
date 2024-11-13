@@ -29,7 +29,7 @@ const router = createBrowserRouter([
         element: <Diary />,
       },
       {
-        path:"profile",
+        path:"profile/:profileName",
         element:<Profile/>
       },
       {
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
       ,
       {
         path:"group",
-        element:<TestTimer/>
+        element:<GroupContainer/>
       },{
         path:"cg",
         element:<CreateGroup/>

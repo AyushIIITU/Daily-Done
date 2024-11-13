@@ -62,8 +62,13 @@ const UserController = {
   },
   getUser: async (req, res) => {
     try {
-      const data = await User.find();
-      // console.log("All user fetched");
+      const {name}=req.params;
+      const data = await User.findOne({name:name}).select('-_id');
+      if(!data){
+        return res.status(404).json({error:"User not found!"})
+      }
+
+      // console.log("data",data);
       res.status(200).json(data);
     } catch (err) {
       console.log(err);
@@ -246,6 +251,26 @@ const UserController = {
     } catch (error) {
       return res.status(500).json({ error: "Internal server error", details: error.message });
     }
+  },
+  addSkill:async (req,res)=>{
+    try{
+      const {id}=req.params;
+      const {skill}=req.body;
+      console.log(id);
+      const user=await User.findById(id);
+      if(!user){
+        return res.status(404).json({error:"User not found"});
+        }
+        const updatedData=await User.findByIdAndUpdate(id,{$addToSet: {skills:skill}});
+        return res.json({message:"Skill added successfully",
+          skill:updatedData?.skills
+        });
+      }
+      catch(err){
+        console.error(err);
+        return res.status(500).json({error:"Internal server error",details:err.message});
+      }
+
   }
 };
 module.exports = UserController;

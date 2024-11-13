@@ -1,49 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GitHubHeatmap from "./GitHubHeatMap";
+import { useParams } from "react-router-dom";
+import EditableProfile from "./EditableProfile";
+import axios from "axios";
+import { API } from "../../Utils/API";
+import ViewProfile from "./ViewProfile";
 
-const SKILL = [
-    "JavaScript",
-    "React",
-    "Node.js",
-    "CSS",
-    "HTML",
-    "Python",
-    "Django",
-    "SQL",
-    "MongoDB",
-    "Git"
-];
+const user = JSON.parse(localStorage.getItem("user"));
 
 function Profile() {
-    const [username, setUsername] = useState('ayush01122004'); 
+  const { profileName } = useParams();
+  const [editable, setEditable] = useState(false);
+  const [userData, setUserData] = useState({
+    name: "UserNotFound",
+    skills: [],
+    avatar: "/notFound.svg",
+  });
 
-    return (
-        <div className="max-w-3xl mx-auto p-6 bg-gray-50 shadow-lg rounded-lg border border-gray-200">
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">My Profile</h2>
-            
-            {/* Skills Section */}
-            <div className="flex flex-wrap justify-center gap-3 mb-6">
-                {SKILL.map((skill, index) => (
-                    <div
-                        key={index}
-                        className="bg-blue-100 border border-blue-300 text-blue-700 text-sm font-semibold px-4 py-2 rounded-full shadow-sm"
-                    >
-                        {skill}
-                    </div>
-                ))}
-            </div>
+  useEffect(() => {
+    const isEditable = user?.name === profileName;
+    setEditable(isEditable);
 
-            {/* LeetCode Card Section */}
-            <div className="flex flex-col items-center mb-6 overflow-hidden">
-                <img
-                    src={`https://leetcard.jacoblin.cool/${username}?ext=heatmap`}
-                    alt={`${username}'s LeetCode Card`}
-                    className="rounded-lg shadow-lg w-80 sm:w-96 mb-4"
-                />
-                <GitHubHeatmap username="AyushIIITU" />
-            </div>
-        </div>
-    );
+    const fetchProfileDetails = async () => {
+      try {
+        const response = await axios.get(`${API}/api/user/profile/${profileName}`);
+        setUserData(prevState => ({
+          ...prevState,
+          ...response.data,
+          id: isEditable ? user?.id : response.data.id
+        }));
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    };
+
+    fetchProfileDetails();
+  }, [profileName]);
+
+  return editable ? (
+    <EditableProfile userData={userData} />
+  ) : (
+    <ViewProfile userData={userData} />
+  );
 }
 
 export default Profile;
