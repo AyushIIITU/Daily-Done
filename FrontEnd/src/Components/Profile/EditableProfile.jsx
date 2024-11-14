@@ -5,11 +5,12 @@ import { Link } from "react-router-dom";
 import { SKILL_COLORS } from "../../Constants/Skills";
 import axios from "axios";
 import { API } from "../../Utils/API";
-import StudyTimer from "./StudyTimer";
-import Timers from "./Timer";
+// import StudyTimer from "./StudyTimer";
+// import Timers from "./Timer";
+import StudyGraph from "./StudyTimeGraph";
 
 function EditableProfile({ userData }) {
-  console.log(userData);
+  console.log(userData?.time);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -41,6 +42,7 @@ function EditableProfile({ userData }) {
   };
   return (
     <div className="min-h-screen bg-gray-50">
+      {userData?.time && <StudyGraph data={userData?.time} />}
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
         <div className="container mx-auto px-4 py-16">
           <div className="flex flex-col md:flex-row items-center gap-8">
@@ -197,7 +199,7 @@ function EditableProfile({ userData }) {
         <ActivityHeatmap title="Website Activity" data={websiteHeatmap} /> */}
         </div>
       </div>
-      <Timers/>
+      {/* <Timers/> */}
     </div>
 
   );

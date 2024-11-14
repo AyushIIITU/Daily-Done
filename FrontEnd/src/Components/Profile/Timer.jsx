@@ -73,7 +73,9 @@ const Timers = ({socket,group}) => {
   const toggleTimer = () => {
     if(totalSeconds === 0) return;
     if(isRunning===false) {
-    socket.emit('startTimer', { userId: user.id, groupIds: group, startTime: new Date(),endTime: new Date()+totalSeconds });
+      const startTime = new Date();
+      const endTime = new Date(startTime.getTime() + totalSeconds * 1000);
+    socket.emit('startTimer', { userId: user.id, groupIds: group, startTime: new Date(),endTime: endTime });
     }
     else {
       socket.emit('pauseTimer', { userId: user.id, groupIds: group, endTime: new Date() });

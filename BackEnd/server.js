@@ -41,39 +41,65 @@ io.on('connection', (socket) => {
   });
 
   // Handle user starting the study timer
-  socket.on('startTimer', async ({ userId, groupIds, startTime,endTime }) => {
-    // Save the start time in the user's record
-    await User.findByIdAndUpdate(userId, { $addToSet: { time: { StartTime: startTime, EndTime: endTime } } });
-    
-    // Broadcast to all groups that the user has started studying
-    groupIds.forEach(group => {
-      console.log(group);
-      socket.to(group).emit('userStartedTimer', { userId, startTime });
-    });
+// User starts the timer
+socket.on('startTimer', async ({ userId, groupIds, startTime, endTime }) => {
+  const currentDay = new Date().setHours(0, 0, 0, 0);
 
-    console.log(`User ${userId} started the timer at ${startTime} for groups: ${groupIds}`);
+  // Check if the user already has an entry for today
+  const existingEntry = await User.findOne({
+    _id: userId,
+    time: { $elemMatch: { StartTime: { $gte: currentDay } } }
   });
 
-  // Handle user stopping/pausing the study timer
-  socket.on('pauseTimer', async ({ userId, groupIds, endTime }) => {
-    // Update the user's latest time entry to add an EndTime
+  if (!existingEntry) {
+    // First time today, add new entry with start and end times
+    await User.findByIdAndUpdate(userId, { 
+      $addToSet: { time: { StartTime: startTime, EndTime: endTime } } 
+    });
+  } else {
+    // Update only the end time for today's entry
     await User.findOneAndUpdate(
       { _id: userId },
       { $set: { "time.$[elem].EndTime": endTime } },
       { 
-        arrayFilters: [{ "elem": { $exists: true } }],
+        arrayFilters: [{ "elem.StartTime": { $gte: currentDay } }],
         sort: { "time": -1 },
         upsert: false
       }
     );
-  
-    // Notify groups that the user has paused/stopped their timer
-    groupIds.forEach(groupId => {
-      socket.to(groupId).emit('userPausedTimer', { userId, endTime });
-    });
-  
-    console.log(`User ${userId} paused the timer at ${endTime}`);
+  }
+
+  // Notify groups about the user starting the timer
+  groupIds.forEach(group => {
+    socket.to(group).emit('userStartedTimer', { userId, startTime });
   });
+
+  console.log(`User ${userId} started the timer at ${startTime} for groups: ${groupIds}`);
+});
+
+// User pauses/stops the timer
+socket.on('pauseTimer', async ({ userId, groupIds, endTime }) => {
+  const currentDay = new Date().setHours(0, 0, 0, 0);
+
+  // Update the user's latest entry's EndTime if it exists
+  await User.findOneAndUpdate(
+    { _id: userId },
+    { $set: { "time.$[elem].EndTime": endTime } },
+    { 
+      arrayFilters: [{ "elem.StartTime": { $gte: currentDay } }],
+      sort: { "time": -1 },
+      upsert: false
+    }
+  );
+
+  // Notify groups about the user pausing/stopping the timer
+  groupIds.forEach(groupId => {
+    socket.to(groupId).emit('userPausedTimer', { userId, endTime });
+  });
+
+  console.log(`User ${userId} paused the timer at ${endTime}`);
+});
+
   
 
   // Handle user disconnection
