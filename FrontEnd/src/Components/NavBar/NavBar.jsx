@@ -11,6 +11,7 @@ if(token){
     localStorage.removeItem('token');
     token=null;
   }
+  
 }
 const NavBarReact = () => {
   const [open, setOpen] = React.useState(false);

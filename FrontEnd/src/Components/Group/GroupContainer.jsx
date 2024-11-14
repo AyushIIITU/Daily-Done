@@ -6,11 +6,16 @@ import { Link } from "react-router-dom";
 import GroupHeader from "./GroupHeader";
 import PublicGroupSVG from "./PublicGroupSVG";
 import MemberCard from "./MemberCard";
+import { io } from "socket.io-client";
+import StudyTimer from "../Profile/StudyTimer";
 const user = JSON.parse(localStorage.getItem("user"));
 const id = user?.id;
+const socket = io(API);
+
 function GroupContainer() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const [joinGroupOpen, setJoinGroupOpen] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
   const [GroupAllDetails, setGroupAllDetails] = useState([]);
   const [publicGroup, setPublicGroup] = useState([]);
   const refPassword = useRef();
@@ -45,6 +50,32 @@ function GroupContainer() {
       console.error("Error in group", err);
     }
   };
+  useEffect(() => {
+    // Connect to Socket.io and set the connection status
+    socket.on("connect", () => {
+      setIsConnected(true);
+      console.log("Connected to Socket.io server");
+      
+      
+    });
+GroupAllDetails.forEach((group) => {
+      socket.emit("joinGroup", { userId: id, groupId: group._id });
+      });
+      
+
+
+    // Handle socket disconnection
+    socket.on("disconnect", () => {
+      setIsConnected(false);
+      console.log("Disconnected from Socket.io server");
+    });
+
+    // Clean up on component unmount
+    return () => {
+      socket.disconnect();
+    };
+
+  }, []);
   useEffect(() => {
     fetchGroupAllDetails();
   }, []);
@@ -92,6 +123,7 @@ function GroupContainer() {
   };
   return (
     <>
+    <StudyTimer socket={socket} groupDetails={GroupAllDetails}/>
       {!GroupDetails && (
         <div className="flex items-center justify-center h-96">
           {/* /* From Uiverse.io by EmaCoto  */}

@@ -11,9 +11,10 @@ import SignUp from "./Components/Auth/SignUp.jsx";
 import Profile from "./Components/Profile/Profile.jsx";
 import YoutubePlaylist from "./Components/MultiMediaPlaylist/YoutubePlaylist.jsx";
 import Group from "./Components/Group/Group.jsx";
-import TestTimer from "./Components/Group/TestTimer.jsx";
+// import TestTimer from "./Components/Group/TestTimer.jsx";
 import CreateGroup from "./Components/Group/CreateGroup.jsx";
 import GroupContainer from "./Components/Group/GroupContainer.jsx";
+// import Timer from "./Test/Timer.jsx";
 // import Profile from "./Components/Profile/Profile.jsx";
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
         path:"group/timer",
         element:<Group/>
       }
+      // ,{
+      //   path:"test",
+      //   element :<Timer/>
+      // }
       ,
       {
         path:"group",
@@ -64,9 +69,9 @@ const router = createBrowserRouter([
   }
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <React.Fragment>
     {/* <ThemeProvider/> */}
     <RouterProvider router={router} />
     <Toaster position="top-center" reverseOrder={false} />
-  </React.StrictMode>
+  </React.Fragment>
 );

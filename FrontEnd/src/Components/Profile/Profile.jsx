@@ -1,22 +1,24 @@
 import { useEffect, useState } from "react";
-import GitHubHeatmap from "./GitHubHeatMap";
+// import GitHubHeatmap from "./GitHubHeatMap";
 import { useParams } from "react-router-dom";
 import EditableProfile from "./EditableProfile";
 import axios from "axios";
 import { API } from "../../Utils/API";
 import ViewProfile from "./ViewProfile";
+// import { io } from "socket.io-client";
 
 const user = JSON.parse(localStorage.getItem("user"));
+
 
 function Profile() {
   const { profileName } = useParams();
   const [editable, setEditable] = useState(false);
-  const [userData, setUserData] = useState({
+    const [userData, setUserData] = useState({
     name: "UserNotFound",
     skills: [],
     avatar: "/notFound.svg",
   });
-
+ 
   useEffect(() => {
     const isEditable = user?.name === profileName;
     setEditable(isEditable);

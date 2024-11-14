@@ -6,16 +6,16 @@ import { SKILL_COLORS } from "../../Constants/Skills";
 import axios from "axios";
 import { API } from "../../Utils/API";
 import StudyTimer from "./StudyTimer";
+import Timers from "./Timer";
 
 function EditableProfile({ userData }) {
-    console.log(userData)
+  console.log(userData);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const filteredSkills = Object.keys(SKILL_COLORS)
-  .filter((skill) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
-  .filter((skill) => !userData.skills.includes(skill));
-
+    .filter((skill) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter((skill) => !userData.skills.includes(skill));
 
   const addSkill = async (skill) => {
     if (!userData.skills.includes(skill)) {
@@ -85,9 +85,6 @@ function EditableProfile({ userData }) {
                     <path d="M11.618 24c-1.604 0-2.977-.533-3.97-1.541L3.55 18.278C2.551 17.262 2 15.819 2 14.215c0-1.578.551-3.008 1.552-4.025L13.071.509c.66-.67 1.829-.652 2.506.036.694.706.71 1.839.034 2.524l-1.762 1.816a5.25 5.25 0 0 1 1.739 1.159l2.463 2.53c.672.684.655 1.815-.039 2.521a1.79 1.79 0 0 1-1.284.545c-.464 0-.896-.181-1.219-.509l-2.536-2.492c-.321-.327-.779-.49-1.367-.49-.606 0-1.069.157-1.375.469l-4.067 4.194c-.342.349-.521.831-.521 1.4 0 .577.189 1.101.519 1.436l4.083 4.182c.315.321.774.484 1.362.484s1.045-.163 1.36-.484l2.549-2.505a1.687 1.687 0 0 1 1.209-.503h.002c.483 0 .939.194 1.286.546.693.705.71 1.837.036 2.522l-2.457 2.525C14.586 23.438 13.176 24 11.618 24zM14.29 1a.703.703 0 0 0-.507.21l-9.519 9.681C3.449 11.72 3 12.9 3 14.215c0 1.341.449 2.535 1.265 3.363l.001.001 4.097 4.18C9.162 22.57 10.288 23 11.618 23c1.288 0 2.444-.455 3.258-1.282l2.457-2.525c.295-.301.279-.804-.034-1.122a.801.801 0 0 0-.573-.247h-.001a.703.703 0 0 0-.502.209l-2.549 2.505c-.497.507-1.214.778-2.068.778s-1.572-.271-2.076-.784L5.446 16.35c-.519-.527-.805-1.286-.805-2.136 0-.824.286-1.57.806-2.099l4.067-4.194c.503-.512 1.206-.771 2.091-.771.854 0 1.571.271 2.074.783l2.536 2.492a.705.705 0 0 0 .512.216.798.798 0 0 0 .571-.246c.313-.319.33-.822.037-1.121l-2.461-2.528a4.238 4.238 0 0 0-2.028-1.137c-.175-.041-.331-.176-.382-.349s-.021-.363.104-.492l2.325-2.398c.298-.302.282-.805-.031-1.124A.799.799 0 0 0 14.29 1z" />
                   </svg>
                 </Link>
-                {/* <Link to={`mailto:${userData.email}`} className="hover:text-gray-200 transition-colors">
-                <Mail className="w-6 h-6" />
-              </Link> */}
               </div>
             </div>
           </div>
@@ -95,49 +92,34 @@ function EditableProfile({ userData }) {
       </div>
 
       <div className="container mx-auto px-4 py-12">
-      <button    onClick={() => setModalOpen(true)} type="button" className="relative inline-flex items-center justify-center p-4 px-6 py-3 overflow-hidden font-medium text-indigo-600 transition duration-300 ease-out border-2 border-purple-500 rounded-full shadow-md group">
-     <span className="absolute inset-0 flex items-center justify-center w-full h-full text-white duration-300 -translate-x-full bg-purple-500 group-hover:translate-x-0 ease">
-     <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="50px"
-            height="50px"
-            viewBox="0 0 24 24"
-            className=" stroke-purple-400 fill-none group-hover:fill-purple-800 group-active:stroke-purple-500 group-active:fill-purple-600 group-active:duration-0 duration-300"
-          >
-            <path
-              d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
-              strokeWidth="1.5"
-            ></path>
-            <path d="M8 12H16" strokeWidth="1.5"></path>
-            <path d="M12 16V8" strokeWidth="1.5"></path>
-          </svg>
-         {/* <svg className="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg> */}
-     </span>
-     <span className="absolute flex items-center justify-center w-full h-full text-purple-500 transition-all duration-300 transform group-hover:translate-x-full ease">Add Skill</span>
-     <span className="relative invisible">Add Skill</span>
- </button>
-        {/* <span>Add Skills</span> */}
-        {/* <button
-          title="Add New"
-          type="button"
+        <button
           onClick={() => setModalOpen(true)}
-          className="group cursor-pointer outline-none hover:rotate-90 duration-300"
+          type="button"
+          className="relative inline-flex items-center justify-center p-4 px-6 py-3 overflow-hidden font-medium text-indigo-600 transition duration-300 ease-out border-2 border-purple-500 rounded-full shadow-md group"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="50px"
-            height="50px"
-            viewBox="0 0 24 24"
-            className="stroke-gray-400 fill-none group-hover:fill-gray-800 group-active:stroke-gray-200 group-active:fill-gray-600 group-active:duration-0 duration-300"
-          >
-            <path
-              d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
-              strokeWidth="1.5"
-            ></path>
-            <path d="M8 12H16" strokeWidth="1.5"></path>
-            <path d="M12 16V8" strokeWidth="1.5"></path>
-          </svg>
-        </button> */}
+          <span className="absolute inset-0 flex items-center justify-center w-full h-full text-white duration-300 -translate-x-full bg-purple-500 group-hover:translate-x-0 ease">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="50px"
+              height="50px"
+              viewBox="0 0 24 24"
+              className=" stroke-purple-400 fill-none group-hover:fill-purple-800 group-active:stroke-purple-500 group-active:fill-purple-600 group-active:duration-0 duration-300"
+            >
+              <path
+                d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+                strokeWidth="1.5"
+              ></path>
+              <path d="M8 12H16" strokeWidth="1.5"></path>
+              <path d="M12 16V8" strokeWidth="1.5"></path>
+            </svg>
+            {/* <svg className="" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg> */}
+          </span>
+          <span className="absolute flex items-center justify-center w-full h-full text-purple-500 transition-all duration-300 transform group-hover:translate-x-full ease">
+            Add Skill
+          </span>
+          <span className="relative invisible">Add Skill</span>
+        </button>
+
         {isModalOpen && (
           <div className="fixed  inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white w-1/2 sm:h-1/2 h-2/3 p-6 rounded-lg shadow-lg ">
@@ -193,10 +175,9 @@ function EditableProfile({ userData }) {
 
             <SkillCard skills={userData.skills} />
           </div>
-            <>
-          <StudyTimer/>
-
-            </>
+          <>
+            {/* <StudyTimer /> */}
+          </>
           {/* <StudyTimeGraph data={studyData} /> */}
         </div>
 
@@ -216,7 +197,9 @@ function EditableProfile({ userData }) {
         <ActivityHeatmap title="Website Activity" data={websiteHeatmap} /> */}
         </div>
       </div>
+      <Timers/>
     </div>
+
   );
 }
 

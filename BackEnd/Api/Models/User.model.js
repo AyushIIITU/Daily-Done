@@ -5,16 +5,16 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
   },
-  skills:[
+  skills: [
     {
-      type:String,
-      required:true,
-      unique:true
-    }
+      type: String,
+      required: true,
+      unique: true,
+    },
   ],
-  avatar:{
-    type:String,
-    default:"/AnimalSVG/Ape.svg"
+  avatar: {
+    type: String,
+    default: "/AnimalSVG/Ape.svg",
   },
   email: {
     type: String,
@@ -23,47 +23,49 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
-  GitHubProfileName:{
+  GitHubProfileName: {
     type: String,
-    unique:true
+    unique: true,
   },
-  LeetCodeProfileName:{
+  LeetCodeProfileName: {
     type: String,
-    unique:true
+    unique: true,
   },
-  CreatedGroup:[{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:"Group"
-  }],
-  JoinedGroup:[{
-     type:mongoose.Schema.Types.ObjectId,
-    ref:"Group"
-  }],
-  time:[
+  CreatedGroup: [
     {
-      StartTime:{
-        type:Date,
-        require:true
-      }
-      ,
-      EndTime:{
-        type:Date,
-        require:true
-      }
-    }
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Group",
+    },
   ],
-  HeatMap:[
+  JoinedGroup: [
     {
-      
-      date:{
-        type:Date,
-        default:Date.now
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Group",
+    },
+  ],
+  time: [
+    {
+      StartTime: {
+        type: Date,
+        require: true,
       },
-      count:{
-        type:Number,
-        default:0
-      }
-    }
+      EndTime: {
+        type: Date,
+        require: true,
+      },
+    },
+  ],
+  HeatMap: [
+    {
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+      count: {
+        type: Number,
+        default: 0,
+      },
+    },
   ],
 });
 
