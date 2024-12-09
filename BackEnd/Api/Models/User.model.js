@@ -25,11 +25,11 @@ const userSchema = new mongoose.Schema({
   },
   GitHubProfileName: {
     type: String,
-    unique: true,
+    // unique: true,
   },
   LeetCodeProfileName: {
     type: String,
-    unique: true,
+    // unique: true,  
   },
   CreatedGroup: [
     {

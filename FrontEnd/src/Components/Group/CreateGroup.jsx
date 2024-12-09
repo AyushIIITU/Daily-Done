@@ -5,7 +5,7 @@ import axios from "axios";
 import { API } from "../../Utils/API";
 
 const user = localStorage.getItem('user');
-const id = user ? JSON.parse(user).userId : null;
+const id = user ? JSON.parse(user).id : null;
 function CreateGroup() {
   const [selectedLogo, setSelectedLogo] = useState(
     Math.floor(Math.random() * 6)
