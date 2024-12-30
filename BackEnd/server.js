@@ -9,9 +9,9 @@ const userRoutes = require('./Api/Routes/User.routes');
 const diaryRoutes = require('./Api/Routes/Diary.routes');
 const youtubeRoutes = require('./Api/Routes/Youtube.routes');
 const groupRoutes = require('./Api/Routes/Group.routes');
+const aiRoutes = require('./Api/Routes/Ai.routes');
 const Group = require('./Api/Models/Group.model');
 const User = require('./Api/Models/User.model');
-const { error } = require('console');
 
 // Middleware setup
 app.use(cors());
@@ -204,7 +204,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/diary', diaryRoutes);
 app.use('/api/yt', youtubeRoutes);
 app.use('/api/group', groupRoutes);
-
+app.use('/ai', aiRoutes);
 app.get("/", (req, res) => {
   res.send("Server is ok Kya");
 });

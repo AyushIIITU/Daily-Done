@@ -42,7 +42,7 @@ function EditableProfile({ userData }) {
   };
   return (
     <div className="min-h-screen bg-gray-50">
-      {userData?.time && <StudyGraph data={userData?.time} />}
+   
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
         <div className="container mx-auto px-4 py-16">
           <div className="flex flex-col md:flex-row items-center gap-8">
@@ -92,6 +92,8 @@ function EditableProfile({ userData }) {
           </div>
         </div>
       </div>
+      <div className=" bg-gray-100 flex items-center justify-center p-4">
+      {userData?.time && <StudyGraph data={userData?.time} />}</div>
 
       <div className="container mx-auto px-4 py-12">
         <button

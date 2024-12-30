@@ -154,7 +154,6 @@ function CreateGroup() {
                     xmlnsXlink="http://www.w3.org/1999/xlink"
                     className="h-7 w-6 fill-gray-100"
                     version="1.1"
-                    id="Public"
                     viewBox="0 0 511.999 511.999"
                     xmlSpace="preserve"
                   >
