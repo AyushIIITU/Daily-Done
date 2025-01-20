@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useState, useRef, useEffect } from 'react';
-import { IoMdAdd } from "react-icons/io";
 import { API } from "../../Utils/API";
 const formatDuration = (duration) => {
     const match = duration.match(/PT(\d+H)?(\d+M)?(\d+S)?/);
@@ -48,13 +47,14 @@ function YoutubePlaylist() {
                 const data=await response2.data;
                 // console.log(data2);
                 if (data.error) throw new Error(data.error.message);
-                console.log(data);
+                // console.log(data);
 
                 setVideos(data.items.map(item => ({
                     videoId: item.snippet.resourceId.videoId,
                     title: item.snippet.title,
                     thumbnail: item.snippet.thumbnails.default.url,
                 })));
+                console.log(videos);
             } else {
                 const videoId = getVideoId(Link);
                 if (videoId) {

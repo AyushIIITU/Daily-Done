@@ -94,7 +94,7 @@ const NavBarReact = () => {
             <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
     {token ? (
       <Link
-        to={`profile/${user.name}`} 
+        to={`profile/${user?.name}`} 
        className="whitespace-nowrap text-base font-medium hover:scale-110"  
       >
         Profile
