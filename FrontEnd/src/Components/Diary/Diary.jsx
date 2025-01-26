@@ -45,7 +45,7 @@ export default function DiaryComponent() {
         }
       });
       
-      setTodos(organisedTask);
+      setTodos(organisedTask.reverse());
     } catch (err) {
       console.error('Error fetching diary data:', err);
     }

@@ -22,7 +22,7 @@ const youtubeSchema = new mongoose.Schema({
         type:String,
         // required: true,
     },
-    progerss:{
+    progress:{
         type:Number,
         default:0
     },

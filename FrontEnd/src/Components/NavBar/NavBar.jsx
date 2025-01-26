@@ -1,31 +1,50 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-let token=localStorage?.getItem('token');
 
-const user = JSON.parse(localStorage.getItem("user"));
-if(token){
-
-  const {exp}=jwtDecode(token);
-  if(exp<new Date().getTime()/1000){
-    localStorage.removeItem('token');
-    token=null;
-  }
-  
-}
 const NavBarReact = () => {
   const [open, setOpen] = React.useState(false);
-  // useEffect(()=>{
-  //   const token=localStorage?.getItem('token');
-  //   if(token){
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
-  //     const {exp}=jwtDecode(token);
-  //     if(exp<new Date().getTime()/1000){
-  //       localStorage.removeItem('token');
-  //     }
-  //   }
+  useEffect(() => {
+    // Check token on component mount and when localStorage changes
+    const handleStorageChange = () => {
+      const currentToken = localStorage.getItem('token');
+      const currentUser = JSON.parse(localStorage.getItem("user"));
+      setIsLoggedIn(!!currentToken);
+      setUser(currentUser);
+      
+      if(currentToken){
+        const {exp} = jwtDecode(currentToken);
+        if(exp < new Date().getTime()/1000){
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+      }
+    };
+
+    // Listen for storage changes (useful for multiple tabs)
+    window.addEventListener('storage', handleStorageChange);
     
-  // },[])
+    // Initial check
+    handleStorageChange();
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setUser(null);
+    window.location.reload();
+  };
+
   return (
     <>
       {/* This example requires Tailwind CSS v2.0+ */}
@@ -92,13 +111,21 @@ const NavBarReact = () => {
             </nav>
             
             <div className="hidden md:flex items-center justify-end md:flex-1 lg:w-0">
-    {token ? (
-      <Link
-        to={`profile/${user?.name}`} 
-       className="whitespace-nowrap text-base font-medium hover:scale-110"  
-      >
-        Profile
-      </Link>
+    {isLoggedIn ? (
+      <>
+        <Link
+          to={`profile/${user?.name}`} 
+          className="whitespace-nowrap text-base font-medium hover:scale-110 mr-8"  
+        >
+          Profile
+        </Link>
+        <button
+          onClick={handleLogout}
+          className="whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-red-600 hover:bg-red-700"
+        >
+          Logout
+        </button>
+      </>
     ) : (
       <>
         <Link
