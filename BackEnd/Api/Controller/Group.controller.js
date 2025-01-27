@@ -269,7 +269,16 @@ const GroupController = {
       if (ownerId !== req.user.id && req.owner !== ownerId) {
         return res.status(405).json({ message: "Unautorised access" });
       }
-      await Group.findByIdAndDelete(GroupId);
+      const GroupData = await Group.findByIdAndDelete(GroupId);
+      await User.findByIdAndUpdate(ownerId, {
+        $pull: { CreatedGroup: GroupId }
+      });
+      GroupData.member.forEach(async (member) => {
+        await User.findByIdAndUpdate(member, {
+          $pull: { JoinedGroup: GroupId }
+        });
+      });
+      
       res.status(200).json(GroupData);
     } catch (err) {
       console.error(err);

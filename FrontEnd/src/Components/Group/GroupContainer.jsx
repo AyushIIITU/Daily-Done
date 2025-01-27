@@ -248,7 +248,7 @@ function GroupContainer() {
           {GroupDetails && GroupDetails.owner && (
             <div className="container mx-auto border-violet-400 border-solid rounded-t-lg min-h-[55vh] overflow-y-auto border-2 bg-slate-800">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-white text-xl font-semibold">
+                <h2 className="text-white text-xl py-2 px-4 font-semibold">
                   {GroupDetails.name}
                 </h2>
                 <button
@@ -354,166 +354,182 @@ function GroupContainer() {
           id="default-modal"
           tabIndex="-1"
           aria-hidden="true"
-          className=" overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+          className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full h-full bg-black/50 backdrop-blur-sm"
         >
-          <div className="relative p-4 w-full max-w-2xl max-h-full mx-auto top-[25vh]">
-            {/* <!-- Modal content --> */}
-            
-            <div className="relative bg-white rounded-lg shadow ">
-              {/* <!-- Modal header --> */}
-              
-              <div className="flex gap-2 p-2 justify-between">
-                <div>
+          <div className="relative p-4 w-full max-w-2xl">
+            {/* Modal content */}
+            <div className="relative bg-neutral-800 rounded-2xl shadow-xl">
+              {/* Modal header */}
+              <div className="flex flex-col sm:flex-row gap-4 p-6 border-b border-neutral-700">
+                {/* Private Option */}
+                <div className="flex-1">
                   <input
                     className="peer sr-only"
                     value="Private"
-                    name="gender"
+                    name="groupType"
                     id="Private"
                     checked={type === "Private"}
                     onChange={() => setType("Private")}
                     type="radio"
                   />
-                  <div className="flex h-16 w-24 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-gray-300 bg-gray-50 p-1 transition-transform duration-150 hover:border-green-400 active:scale-95 peer-checked:border-green-500 peer-checked:shadow-md peer-checked:shadow-green-400">
+                  <div className="flex h-20 cursor-pointer items-center justify-center rounded-xl border-2 border-neutral-600 bg-neutral-700/50 p-4 transition-all duration-300 hover:border-violet-400 hover:bg-neutral-700 active:scale-95 peer-checked:border-violet-500 peer-checked:bg-violet-500/10">
                     <label
-                      className="flex cursor-pointer items-center justify-center text-sm uppercase text-gray-500 peer-checked:text-green-500"
+                      className="flex cursor-pointer items-center gap-3 text-base font-medium text-gray-400 peer-checked:text-violet-500"
                       htmlFor="Private"
                     >
                       <svg
-                        id="Private"
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-7 w-6 fill-gray-100"
-                        viewBox="0 0 1024 1024"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        <circle
-                          cx="512"
-                          cy="512"
-                          r="512"
-                          style={{ fill: "#56b14e" }}
-                        />
                         <path
-                          data-name="PIA logo (monochrome version by krisu)"
-                          d="M486.59 371c0-15.43-18.66-23.16-29.57-12.26s-3.19 29.58 12.24 29.58a17.32 17.32 0 0 0 17.32-17.33m68.18-17.31c-15.43 0-23.18 18.65-12.26 29.57s29.58 3.17 29.57-12.26a17.31 17.31 0 0 0-17.31-17.31m-18.66 45.89a36 36 0 0 1-48.17 0c-4.37-3.69-10.12 2.53-6.09 6.6a44 44 0 0 0 60.37 0 4.5 4.5 0 0 0-6.11-6.6m159.63 67v-.25a36.09 36.09 0 0 0-26.22-34.7v-30.91A152.73 152.73 0 0 0 516.79 248h-5.84a152.73 152.73 0 0 0-152.73 152.71v30.12A36.09 36.09 0 0 0 328.59 466a51.34 51.34 0 0 0-7.09 26v195.85a51.54 51.54 0 0 0 38.1 49.74A37.7 37.7 0 0 0 394.06 760h42.84a37.69 37.69 0 0 0 33.6-20.59h78.59A37.68 37.68 0 0 0 582.66 760h42.85a37.72 37.72 0 0 0 34-21.37 51.57 51.57 0 0 0 43-50.82V492.06a51.31 51.31 0 0 0-6.78-25.49zM559.55 656.36a23.1 23.1 0 0 1-22.84 26.46H487.3a23.12 23.12 0 0 1-22.85-26.44l9.55-64.56a58.61 58.61 0 0 1 31.4-102.87A58.62 58.62 0 0 1 550 591.83zm5.58-215.88h-106A35.88 35.88 0 0 0 434 430.24h-18v-32.06a95.65 95.65 0 0 1 95.62-95.64h4.67a95.65 95.65 0 0 1 95.62 95.64v32.06h-21.6a35.89 35.89 0 0 0-25.18 10.24zm-21.94 219a5.49 5.49 0 0 1-5.37 6.89h-51.33a5.48 5.48 0 0 1-5.36-6.91l9.87-71.23a8.49 8.49 0 0 0-.44-3.13 16 16 0 0 0-3.16-3.21c-.18-.15-.31-.26-.42-.36a42.24 42.24 0 1 1 50.43-.31c0 .07-.16.28-.65.68a16 16 0 0 0-3.16 3.21 5.22 5.22 0 0 0-.32 1.42z"
-                          style={{ fill: "#fff" }}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                         />
                       </svg>
-                      Private
+                      Private Group
                     </label>
                   </div>
                 </div>
-                <div>
+
+                {/* Public Option */}
+                <div className="flex-1">
                   <input
                     className="peer sr-only"
                     value="Public"
-                    name="gender"
+                    name="groupType"
                     id="Public"
                     checked={type === "Public"}
                     onChange={handlePublic}
                     type="radio"
                   />
-                  <div className="flex h-16 w-24 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-gray-300 bg-gray-50 p-1 transition-transform duration-150 hover:border-blue-400 active:scale-95 peer-checked:border-blue-500 peer-checked:shadow-md peer-checked:shadow-blue-400">
+                  <div className="flex h-20 cursor-pointer items-center justify-center rounded-xl border-2 border-neutral-600 bg-neutral-700/50 p-4 transition-all duration-300 hover:border-violet-400 hover:bg-neutral-700 active:scale-95 peer-checked:border-violet-500 peer-checked:bg-violet-500/10">
                     <label
-                      className="flex cursor-pointer items-center justify-center text-sm uppercase text-gray-500 peer-checked:text-blue-500"
+                      className="flex cursor-pointer items-center gap-3 text-base font-medium text-gray-400 peer-checked:text-violet-500"
                       htmlFor="Public"
                     >
-                      <PublicGroupSVG />
-                      Public
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
+                      </svg>
+                      Public Group
                     </label>
                   </div>
                 </div>
+
+                {/* Close Button */}
                 <button
                   type="button"
                   onClick={() => setJoinGroupOpen(false)}
-                  className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                  data-modal-hide="default-modal"
+                  className="absolute right-4 top-4 p-2 text-gray-400 hover:text-white rounded-lg hover:bg-neutral-700 transition-colors"
                 >
                   <svg
-                    className="w-3 h-3"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5"
+                    viewBox="0 0 24 24"
                     fill="none"
-                    viewBox="0 0 14 14"
+                    stroke="currentColor"
+                    strokeWidth="2"
                   >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                    />
+                    <path d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                  <span className="sr-only">Close modal</span>
                 </button>
               </div>
              
-              {/* <!-- Modal body --> */}
+              {/* Modal body */}
               {type === "Private" && (
-                <form
-                  onSubmit={handleOnPrivateJoin}
-                  className="p-4 md:p-5 space-y-4"
-                >
-                  <div className="relative h-11 w-full min-w-[200px]">
-                    <input
-                      placeholder=""
-                      ref={refGroupId}
-                      className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-3 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-cyan-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-                    />
-                    <label className="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.1] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-cyan-500 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-cyan-500 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-cyan-500 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
-                      GroupId
-                    </label>
-                  </div>
-                  <div className="relative h-11 w-full min-w-[200px]">
-                    <input
-                      placeholder=""
-                      ref={refPassword}
-                      className="peer h-full w-full rounded-md border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-3 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 focus:border-2 focus:border-cyan-500 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
-                    />
-                    <label className="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.1] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-cyan-500 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:!border-cyan-500 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:!border-cyan-500 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
-                      Password
-                    </label>
+                <form onSubmit={handleOnPrivateJoin} className="p-6 space-y-6">
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Group ID"
+                        ref={refGroupId}
+                        className="w-full px-4 py-3 bg-neutral-700 border border-neutral-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-violet-500 transition-colors"
+                      />
+                    </div>
+                    <div className="relative">
+                      <input
+                        type="password"
+                        placeholder="Password"
+                        ref={refPassword}
+                        className="w-full px-4 py-3 bg-neutral-700 border border-neutral-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-violet-500 transition-colors"
+                      />
+                    </div>
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full py-2 bg-green-500 text-white rounded-lg"
+                    className="w-full py-3 px-4 bg-violet-500 hover:bg-violet-600 text-white rounded-lg font-medium transition-colors"
                   >
-                    Join Group
+                    Join Private Group
                   </button>
                 </form>
               )}
+
               {type === "Public" && (
-                <div className="p-4 md:p-5 space-y-4">
-                  {publicGroup.map((item, index) => (
-                    <>
+                <div className="p-6 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {publicGroup.map((item, index) => (
                       <div
                         key={index}
-                        className="p-4 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-700"
-                        onClick={() => setGroupDetails(item)}
+                        className="p-4 rounded-xl bg-neutral-700/50 hover:bg-neutral-700 border border-neutral-600 transition-colors"
                       >
-                        <div className="flex relative flex-col justify-center self-stretch bg-gray-100 h-[70px] min-h-[70px] rounded-[16px] overflow-hidden w-[70px]">
-                          <div className="aspect-auto">
-                            <img src={item.avatar} alt="Description of SVG" />
+                        <div className="flex items-center gap-4 mb-4">
+                          <div className="w-16 h-16 rounded-xl overflow-hidden bg-white">
+                            <img 
+                              src={item.avatar} 
+                              alt={item.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-medium text-white mb-1">
+                              {item.name}
+                            </h3>
+                            {item?.member?.length > 0 && (
+                              <p className="text-sm text-gray-400">
+                                {item.member.length} Members
+                              </p>
+                            )}
                           </div>
                         </div>
-                        <div className="font-medium text-center text-gray-500 dark:text-gray-400">
-                          {item.name}
-                        </div>
-                        {item?.member?.length > 0 && (
-                          <div className="font-medium text-center text-gray-500 dark:text-gray-400">
-                            {item.member.length} Members
-                          </div>
-                        )}
                         <button
                           type="button"
-                          onClick={async () =>
-                            await handleJoinPublic(item?._id)
-                          }
-                          className="w-full py-2 bg-green-500 text-white rounded-lg"
+                          onClick={() => handleJoinPublic(item?._id)}
+                          className="w-full py-2.5 px-4 bg-violet-500 hover:bg-violet-600 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                         >
-                          Join Group
+                          <span>Join Group</span>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17 8l4 4m0 0l-4 4m4-4H3"
+                            />
+                          </svg>
                         </button>
                       </div>
-                    </>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

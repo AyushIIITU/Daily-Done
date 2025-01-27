@@ -16,10 +16,10 @@ function GroupHeader({GroupIcon, GroupName, GroupDescription}) {
           </div>
         </div>
         <div className="ms-3">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-semibold  text-white">
             {GroupName}
           </h3>
-          <div className="text-sm font-normal text-gray-600 dark:text-gray-300">
+          <div className="text-sm font-normal text-gray-300">
             {GroupDescription}
           </div>
         </div>
