@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { API } from "../../Utils/API";
 import axios from "axios";
-import toast from "react-hot-toast";
+import toast, { ToastBar } from "react-hot-toast";
 // import axios from "axios";
 // import second from ''
 
@@ -37,6 +37,7 @@ function LoginIn() {
         navigate('/');
       }
     } catch (error) {
+      toast.error(error.response.data?.error);
       console.log("Error in Authorization:", error);
     }
   };

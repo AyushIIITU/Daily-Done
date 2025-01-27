@@ -3,6 +3,8 @@ import { useRef, useState } from "react";
 import { GroupLogo } from "../../Constants/GroupLogo";
 import axios from "axios";
 import { API } from "../../Utils/API";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const user = localStorage.getItem('user');
 const id = user ? JSON.parse(user).id : null;
@@ -14,28 +16,49 @@ function CreateGroup() {
   const refName=useRef("");
   const refPassword=useRef("");
   const refDescription=useRef("");
+  const navigate=useNavigate();
 
   const handleOnSubmit = async(e) => {
     e.preventDefault();
     try {
-      const data={
-        name:refName.current.value,
-        password:refPassword.current.value,
-        description:refDescription.current.value,
-        type:type,
-        avatar:GroupLogo[selectedLogo],
-        owner:id
+      // Validate required fields
+      if (!refName.current.value) {
+        return toast.error("Group name is required");
       }
-      const response=await axios.post(`${API}/api/group/create`,data,{
-        headers:{
-          'Authorization':`Bearer ${localStorage.getItem('token')}`
+
+      if (type === "Private" && !refPassword.current.value) {
+        return toast.error("Password is required for private groups");
+      }
+
+      const data = {
+        name: refName.current.value,
+        password: type === "Private" ? refPassword.current.value : undefined,
+        description: refDescription.current.value,
+        type: type,
+        avatar: GroupLogo[selectedLogo],
+        owner: id
+      }
+
+      const response = await axios.post(`${API}/api/group/create`, data, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      console.log(response);
+
+      if (response.status === 201) {
+        toast.success("Group created successfully!");
+        navigate('/group');
+      }
     } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to create group");
       console.error(err);
     }
   }
+
+  const handleCancel = () => {
+    navigate('/group');
+  }
+
   return (
     <div className="container align-middle mx-auto">
       <form onSubmit={handleOnSubmit} className="bg-white p-10 rounded-lg shadow-lg">
@@ -200,22 +223,24 @@ function CreateGroup() {
             </div>
           </div>
 
-          <div id="input" className="relative">
-            <input
-              type="text"
-              id="floating_outlined"
-              className="block w-full text-sm h-[50px] px-4 text-slate-900 bg-white rounded-[8px] border border-violet-200 appearance-none focus:border-transparent focus:outline focus:outline-2 focus:outline-primary focus:ring-0 hover:border-brand-500-secondary- peer invalid:border-error-500 invalid:focus:border-error-500 overflow-ellipsis overflow-hidden text-nowrap pr-[48px]"
-              placeholder="Password"
-              ref={refPassword}
-              // value=""
-            />
-            <label
-              htmlFor="floating_outlined"
-              className="peer-placeholder-shown:-z-10 peer-focus:z-10 absolute text-[14px] leading-[150%] text-primary peer-focus:text-primary peer-invalid:text-error-500 focus:invalid:text-error-500 duration-300 transhtmlForm -translate-y-[1.2rem] scale-75 top-2 z-10 origin-[0] bg-white disabled:bg-gray-50-background- px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-[1.2rem] rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
-            >
-              Password
-            </label>
-          </div>
+          {type === "Private" && (
+            <div id="input" className="relative">
+              <input
+                type="password"
+                id="floating_outlined"
+                className="block w-full text-sm h-[50px] px-4 text-slate-900 bg-white rounded-[8px] border border-violet-200 appearance-none focus:border-transparent focus:outline focus:outline-2 focus:outline-primary focus:ring-0 hover:border-brand-500-secondary- peer invalid:border-error-500 invalid:focus:border-error-500 overflow-ellipsis overflow-hidden text-nowrap pr-[48px]"
+                placeholder="Password"
+                ref={refPassword}
+                required
+              />
+              <label
+                htmlFor="floating_outlined"
+                className="peer-placeholder-shown:-z-10 peer-focus:z-10 absolute text-[14px] leading-[150%] text-primary peer-focus:text-primary peer-invalid:text-error-500 focus:invalid:text-error-500 duration-300 transhtmlForm -translate-y-[1.2rem] scale-75 top-2 z-10 origin-[0] bg-white disabled:bg-gray-50-background- px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-[1.2rem] rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto start-1"
+              >
+                Password
+              </label>
+            </div>
+          )}
 
           <div id="input" className="relative">
             <input
@@ -239,13 +264,13 @@ function CreateGroup() {
           <button
             className="w-fit rounded-lg text-sm px-5 py-2 focus:outline-none h-[50px] border bg-violet-500 hover:bg-violet-600 focus:bg-violet-700 border-violet-500-violet- text-white focus:ring-4 focus:ring-violet-200 hover:ring-4 hover:ring-violet-100 transition-all duration-300"
             type="submit"
-
           >
-            <div className="flex gap-2 items-center">Save changes</div>
+            <div className="flex gap-2 items-center">Create Group</div>
           </button>
           <button
             className="w-fit rounded-lg text-sm px-5 py-2 focus:outline-none h-[50px] border bg-transparent border-primary text-primary focus:ring-4 focus:ring-gray-100"
             type="button"
+            onClick={handleCancel}
           >
             Cancel
           </button>

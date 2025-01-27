@@ -14,6 +14,8 @@ import Group from "./Components/Group/Group.jsx";
 // import TestTimer from "./Components/Group/TestTimer.jsx";
 import CreateGroup from "./Components/Group/CreateGroup.jsx";
 import GroupContainer from "./Components/Group/GroupContainer.jsx";
+import GroupJoinPrivate from "./Components/Group/GroupJoinPrivate.jsx";
+import GroupJoinPublic from "./Components/Group/GroupJoinPublic.jsx";
 // import Timer from "./Test/Timer.jsx";
 // import Profile from "./Components/Profile/Profile.jsx";
 const router = createBrowserRouter([
@@ -30,43 +32,49 @@ const router = createBrowserRouter([
         element: <Diary />,
       },
       {
-        path:"profile/:profileName",
-        element:<Profile/>
+        path: "profile/:profileName",
+        element: <Profile />,
       },
       {
-        path:"group/timer",
-        element:<Group/>
-      }
-      // ,{
-      //   path:"test",
-      //   element :<Timer/>
-      // }
-      ,
-      {
-        path:"group",
-        element:<GroupContainer/>
-      },{
-        path:"createGroup",
-        element:<CreateGroup/>
+        path: "group/timer",
+        element: <Group />,
       },
       {
-        path:"gg",
-        element:<GroupContainer/>
+        path: "group",
+        element: <GroupContainer />,
       },
       {
-        path:"yt",
-        element:<YoutubePlaylist/>
-      }
+        path: "group/public/:groupId",
+        element: <GroupJoinPublic />,
+        // element:<GroupContainer/>
+      },
+      {
+        path: "group/private/:groupId",
+        element: <GroupJoinPrivate />,
+      },
+
+      {
+        path: "createGroup",
+        element: <CreateGroup />,
+      },
+      {
+        path: "gg",
+        element: <GroupContainer />,
+      },
+      {
+        path: "yt",
+        element: <YoutubePlaylist />,
+      },
     ],
   },
   {
-    path:"login",
-    element:<LoginIn/>
+    path: "login",
+    element: <LoginIn />,
   },
   {
     path: "/signup",
     element: <SignUp />,
-  }
+  },
 ]);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.Fragment>

@@ -37,6 +37,7 @@ function SignUp() {
         navigate("/login");
       }
     } catch (err) {
+      toast.error(err.response.data?.error);
       console.error(err);
     }
   };

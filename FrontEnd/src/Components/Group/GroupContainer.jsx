@@ -8,6 +8,8 @@ import MemberCard from "./MemberCard";
 import { io } from "socket.io-client";
 import StudyTimer from "../Profile/StudyTimer";
 import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { Share2, Copy, Lock } from 'lucide-react';
 const user = JSON.parse(localStorage.getItem("user"));
 const id = user?.id;
 const socket = io(API);
@@ -22,6 +24,7 @@ function GroupContainer() {
   const refGroupId = useRef();
   const [GroupDetails, setGroupDetails] = useState();
   const [type, setType] = useState("Private");
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const fetchPublicGroup = async () => {
     try {
@@ -42,24 +45,30 @@ function GroupContainer() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      setGroupAllDetails(response.data);
+      
+      // Filter out any null or invalid groups
+      const validGroups = response.data.filter(group => 
+        group && group._id && group.owner && group.owner._id
+      );
+      
+      setGroupAllDetails(validGroups);
+      
+      // If no group is selected yet, show the first valid group's details
+      if (!GroupDetails && validGroups.length > 0) {
+        setGroupDetails(validGroups[0]);
+      }
 
-      // joinExistingGroups(response.data);
-      // console.log(response.data);
+      // Join socket rooms for all valid groups
+      validGroups.forEach((group) => {
+        if (group._id) {
+          socket.emit("joinGroup", { userId: id, groupId: group._id });
+        }
+      });
     } catch (err) {
       console.error("Error in group", err);
+      toast.error("Failed to fetch group details");
     }
   };
-  // const joinExistingGroups = (GroupAllDetails) => {
-  //   // console.log(GroupAllDetails);
-  //   GroupAllDetails.forEach((group) => {
-
-  //     // console.log(socket.hasListeners(`group-${group._id}`));
-  //     if (!socket.hasListeners(`group-${group._id}`)) {
-  //       socket.emit("joinGroup", { userId: id, groupId: group._id });
-  //     }
-  //   });
-  // };
   useEffect(() => {
     fetchGroupAllDetails();
   }, []);
@@ -82,13 +91,27 @@ function GroupContainer() {
   const handleOnPrivateJoin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API}/api/group/join/${id}`, {
-        groupId: refGroupId.current.value,
-        password: refPassword.current.value,
-      });
-      socket.emit("joinGroup", { userId: id, groupId: response.data._id });
-      console.log(response);
+      const response = await axios.post(
+        `${API}/api/group/join`,
+        {
+          groupId: refGroupId.current.value,
+          userId: id,
+          password: refPassword.current.value,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        await fetchGroupAllDetails();
+        setJoinGroupOpen(false);
+        toast.success("Successfully joined the group!");
+      }
     } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to join group");
       console.error("Error in group", err);
     }
   };
@@ -114,17 +137,41 @@ function GroupContainer() {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      socket.emit("joinGroup", { userId: user.id, groupId: response.data._id });
+      
+      if (response.status === 200) {
+        // Refresh group list after joining
+        await fetchGroupAllDetails();
+        // Close the join modal
+        setJoinGroupOpen(false);
+        toast.success("Successfully joined the group!");
+      }
     } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to join group");
       console.error("Error in group", err);
     }
   };
+
+  const handleShare = () => {
+    setShowShareModal(true);
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() => {
+        toast.success('Copied to clipboard!');
+      })
+      .catch(() => {
+        toast.error('Failed to copy');
+      });
+  };
+
   return (
     <>
-      <div className="flex justify-center  flex-wrap-reverse min-h-[calc(100vh-78px)]">
-        <div className="flex items-center sm:w-1/2 w-full flex-col  p-4 bg-white  border-b ">
+      <div className="flex flex-col-reverse sm:flex-row justify-center min-h-[calc(100vh-78px)]">
+        {/* Group Details Section */}
+        <div className="sm:w-1/2 w-full flex flex-col p-4 bg-slate-800">
           {/* Main button container */}
-          <div className="flex items-center w-1/2 justify-between bg-white bg-opacity-80 backdrop-blur-md rounded-full px-6 py-3 shadow-lg max-w-md mx-auto transition-all duration-300 hover:shadow-xl hover:bg-opacity-90">
+          <div className="flex items-center w-1/2 justify-between bg-neutral-800 bg-opacity-80 backdrop-blur-md rounded-full px-6 py-3 shadow-lg max-w-md mx-auto transition-all duration-300 hover:shadow-xl hover:bg-opacity-90 mb-4">
           
 
             <Link
@@ -195,60 +242,58 @@ function GroupContainer() {
                 Join
               </div>
             </button>
-            {/* <button
-              className="rounded-lg relative w-40 h-10 cursor-pointer flex items-center border border-green-500 bg-green-500 group hover:bg-green-500 active:bg-green-500 active:border-green-500"
-              onClick={() => setJoinGroupOpen(true)}
-            >
-              <span className="text-gray-200 font-semibold ml-8 transform group-hover:translate-x-20 group-hover:hidden transition-all duration-300">
-                Join Group
-              </span>
-              <span className="absolute right-0 h-full w-10 rounded-lg bg-green-500 flex items-center justify-center transform group-hover:translate-x-0 group-hover:w-full transition-all duration-300">
-                <svg
-                  className="svg w-8 text-white"
-                  fill="none"
-                  height="24"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <line x1="12" x2="12" y1="5" y2="19"></line>
-                  <line x1="5" x2="19" y1="12" y2="12"></line>
-                </svg>
-              </span>
-            </button> */}
           </div>
 
           {/* Display Group Details if available */}
-          {GroupDetails && (
-            <div className="container mx-auto border-orange-400 border-solid rounded-t-lg min-h-[55vh] overflow-y-auto border-2">
+          {GroupDetails && GroupDetails.owner && (
+            <div className="container mx-auto border-violet-400 border-solid rounded-t-lg min-h-[55vh] overflow-y-auto border-2 bg-slate-800">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-white text-xl font-semibold">
+                  {GroupDetails.name}
+                </h2>
+                <button
+                  onClick={handleShare}
+                  className="flex items-center gap-2 px-4 py-2 bg-violet-500 hover:bg-violet-600 text-white rounded-lg transition-all"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </button>
+              </div>
               <GroupHeader
-                GroupDescription={GroupDetails?.description}
-                GroupIcon={GroupDetails.avatar}
-                GroupName={GroupDetails.name}
+                GroupDescription={GroupDetails?.description || ""}
+                GroupIcon={GroupDetails?.avatar}
+                GroupName={GroupDetails?.name || ""}
               />
-              {/* Render the admin/member cards */}
-              <MemberCard
-                member={GroupDetails.owner}
-                type="Admin"
-                socket={socket}
-                isOnline={onlineUser[GroupDetails.owner._id]}
-              />
-              {GroupDetails.member.map((memb, index) => (
+              <div className="flex flex-col p-4 ">
+              {/* Member cards */}
+              {GroupDetails.owner && (
                 <MemberCard
-                  key={index}
+                  member={GroupDetails.owner}
+                  type="Admin"
+                  socket={socket}
+                  isOnline={onlineUser[GroupDetails.owner?._id] || false}
+                  studyTime={GroupDetails.owner?.studyTime || 0}
+                  status={GroupDetails.owner?.status || "Offline"}
+                />
+              )}
+              
+              {GroupDetails.member?.filter(Boolean).map((memb, index) => (
+                <MemberCard
+                  key={memb?._id || index}
                   member={memb}
                   type="Member"
-                  isOnline={onlineUser[memb._id]}
+                  isOnline={onlineUser[memb?._id] || false}
                   socket={socket}
+                  studyTime={memb?.studyTime || 0}
+                  status={memb?.status || "Offline"}
                 />
               ))}
+              </div>
             </div>
           )}
         </div>
+
+        {/* Study Timer Section */}
         <StudyTimer socket={socket} groupDetails={GroupAllDetails} />
       </div>
       {/* Drawer Swipe */}
@@ -277,27 +322,28 @@ function GroupContainer() {
           </h5>
         </div>
 
-        {/* Drawer Content Grid */}
+        {/* Drawer Content Grid with null checks */}
         <div className="grid grid-cols-3 gap-4 p-4 lg:grid-cols-4">
-          {GroupAllDetails.map((item, index) => (
-            <>
-              <div
-                key={index}
-                className="p-4 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-700"
-                onClick={() => setGroupDetails(item)}
-              >
-                {/* <div className="flex justify-center items-center p-2 mx-auto mb-2 bg-gray-200 dark:bg-gray-600 rounded-full w-[48px] h-[48px] max-w-[48px] max-h-[48px]"> */}
-                <div className="flex relative flex-col justify-center self-stretch bg-gray-100 h-[70px] min-h-[70px] rounded-[16px] overflow-hidden w-[70px]">
-                  <div className="aspect-auto">
-                    <img src={item.avatar} alt="Description of SVG" />
-                  </div>
-                </div>
-                {/* </div> */}
-                <div className="font-medium text-center text-gray-500 dark:text-gray-400">
-                  {item.name}
-                </div>
+          {GroupAllDetails.filter(item => item && item._id && item.owner).map((item, index) => (
+            <div
+              key={item._id || index}
+              className={`p-4 rounded-lg cursor-pointer ${
+                GroupDetails?._id === item._id
+                  ? "bg-violet-100 hover:bg-violet-200"
+                  : "bg-gray-50 hover:bg-gray-100"
+              }`}
+              onClick={() => setGroupDetails(item)}
+            >
+              <div className="flex relative flex-col justify-center self-stretch bg-gray-100 h-[70px] min-h-[70px] rounded-[16px] overflow-hidden w-[70px]">
+                <img src={item.avatar || ''} alt={item.name || ''} className="aspect-auto" />
               </div>
-            </>
+              <div className="font-medium text-center text-gray-700 mt-2">
+                {item.name || 'Unnamed Group'}
+              </div>
+              <div className="text-sm text-center text-gray-500">
+                {item.owner?._id === id ? "Created by you" : "Joined"}
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -471,6 +517,108 @@ function GroupContainer() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Share Modal */}
+      {showShareModal && GroupDetails && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-neutral-800 p-6 rounded-xl w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold text-white">Share Group</h3>
+              <button
+                onClick={() => setShowShareModal(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Group Info */}
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-gray-300">{GroupDetails.name}</span>
+                {GroupDetails.type === "Private" && (
+                  <Lock className="w-4 h-4 text-gray-400" />
+                )}
+              </div>
+              <p className="text-sm text-gray-400">
+                {GroupDetails.type === "Private" 
+                  ? "Share these details with people you want to invite:"
+                  : "Anyone can join with this link:"}
+              </p>
+            </div>
+
+            {/* Share Link */}
+            <div className="mb-4">
+              <div className="flex items-center gap-2 p-3 bg-neutral-700 rounded-lg">
+                {
+                  GroupDetails.type === "Public" ? (
+                    <>
+                    <input
+                  type="text"
+                  readOnly
+                  value={`${window.location.origin}/group/public/${GroupDetails._id}`}
+                  className="flex-1 bg-transparent text-white outline-none"
+                />
+                <button
+                  onClick={() => copyToClipboard(`${window.location.origin}/group/public/${GroupDetails._id}`)}
+                  className="p-2 hover:bg-neutral-600 rounded-lg transition-all"
+                >
+                  <Copy className="w-4 h-4 text-gray-300" />
+                </button>
+                    </>
+                ) : (
+                  <>
+                  <input
+                  type="text"
+                  readOnly
+                  value={`${window.location.origin}/group/private/${GroupDetails._id}`}
+                  className="flex-1 bg-transparent text-white outline-none"
+                />
+                <button
+                  onClick={() => copyToClipboard(`${window.location.origin}/group/private/${GroupDetails._id}`)}
+                  className="p-2 hover:bg-neutral-600 rounded-lg transition-all"
+                >
+                  <Copy className="w-4 h-4 text-gray-300" />
+                </button>
+                  </>
+                )}
+                
+              </div>
+            </div>
+
+            {/* Private Group Password */}
+            {GroupDetails.type === "Private" && (
+              <div className="mb-4">
+                <label className="block text-sm text-gray-400 mb-2">
+                  Group Password
+                </label>
+                <div className="flex items-center gap-2 p-3 bg-neutral-700 rounded-lg">
+                  <input
+                    type="text"
+                    readOnly
+                    value={GroupDetails.password}
+                    className="flex-1 bg-transparent text-white outline-none"
+                  />
+                  <button
+                    onClick={() => copyToClipboard(GroupDetails.password)}
+                    className="p-2 hover:bg-neutral-600 rounded-lg transition-all"
+                  >
+                    <Copy className="w-4 h-4 text-gray-300" />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowShareModal(false)}
+              className="w-full py-2 bg-violet-500 hover:bg-violet-600 text-white rounded-lg transition-all"
+            >
+              Done
+            </button>
           </div>
         </div>
       )}

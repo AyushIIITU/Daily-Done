@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Timer, Play, Pause, RotateCcw } from "lucide-react";
+import { Timer as TimerIcon, Play, Pause, RotateCcw } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -8,31 +9,210 @@ const Timers = ({ socket, group }) => {
   const [isRunning, setIsRunning] = useState(false);
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [editingField, setEditingField] = useState(null);
-  const timerRef = useRef(null); // Ref for the timer container
+  const [startTimeStamp, setStartTimeStamp] = useState(null);
+  const timerRef = useRef(null);
+  const disconnectTimeoutRef = useRef(null);
 
+  // Handle scroll input
+  const handleScroll = (e, unit) => {
+    e.preventDefault();
+    if (isRunning) return;
+
+    const delta = e.deltaY > 0 ? -1 : 1;
+    const maxValue = unit === 'hours' ? 23 : 59;
+
+    setTime(prev => {
+      const newValue = Math.max(0, Math.min(maxValue, prev[unit] + delta));
+      const newTime = { ...prev, [unit]: newValue };
+      
+      // Update total seconds
+      setTotalSeconds((newTime.hours * 3600) + (newTime.minutes * 60));
+      return newTime;
+    });
+  };
+
+  // Handle direct input
+  const handleDirectInput = (unit, value) => {
+    if (isRunning) return;
+
+    const numValue = parseInt(value) || 0;
+    const maxValue = unit === 'hours' ? 23 : 59;
+    const newValue = Math.max(0, Math.min(maxValue, numValue));
+
+    setTime(prev => {
+      const newTime = { ...prev, [unit]: newValue };
+      // Update total seconds
+      setTotalSeconds((newTime.hours * 3600) + (newTime.minutes * 60));
+      return newTime;
+    });
+  };
+
+  // Reset timer
+  const resetTimer = () => {
+    setIsRunning(false);
+    setTime({ hours: 0, minutes: 0 });
+    setTotalSeconds(0);
+    setStartTimeStamp(null);
+    exitFullscreen();
+  };
+
+  // Handle timer countdown
   useEffect(() => {
     let interval;
-
     if (isRunning && totalSeconds > 0) {
       interval = setInterval(() => {
-        setTotalSeconds((prev) => {
+        setTotalSeconds(prev => {
           if (prev <= 1) {
-            setIsRunning(false);
+            handleTimerComplete();
             return 0;
           }
+          // Update time display
+          const hours = Math.floor(prev / 3600);
+          const minutes = Math.floor((prev % 3600) / 60);
+          setTime({ hours, minutes });
           return prev - 1;
         });
       }, 1000);
     }
-
     return () => clearInterval(interval);
   }, [isRunning, totalSeconds]);
 
+  // Handle socket reconnection
   useEffect(() => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    setTime({ hours, minutes });
-  }, [totalSeconds]);
+    if (!socket) return;
+
+    const handleReconnect = async () => {
+      if (startTimeStamp && isRunning) {
+        const now = new Date();
+        const elapsedSeconds = Math.floor((now - new Date(startTimeStamp)) / 1000);
+        const remainingSeconds = Math.max(0, totalSeconds - elapsedSeconds);
+
+        if (remainingSeconds > 0) {
+          setTotalSeconds(remainingSeconds);
+        } else {
+          handleTimerComplete();
+        }
+      }
+      clearTimeout(disconnectTimeoutRef.current);
+    };
+
+    const handleDisconnect = () => {
+      // Set a timeout to handle prolonged disconnections
+      disconnectTimeoutRef.current = setTimeout(() => {
+        if (isRunning) {
+          handleTimerComplete();
+          toast.error("Connection lost. Timer stopped.");
+        }
+      }, 5000); // Wait 5 seconds before stopping timer
+    };
+
+    socket.on('connect', handleReconnect);
+    socket.on('disconnect', handleDisconnect);
+
+    return () => {
+      socket.off('connect', handleReconnect);
+      socket.off('disconnect', handleDisconnect);
+      clearTimeout(disconnectTimeoutRef.current);
+    };
+  }, [socket, isRunning, totalSeconds, startTimeStamp]);
+
+  const handleTimerComplete = () => {
+    setIsRunning(false);
+    exitFullscreen();
+    updateStudyTime();
+  };
+
+  const updateStudyTime = () => {
+    if (!startTimeStamp) return;
+
+    const endTime = new Date();
+    socket.emit("pauseTimer", {
+      userId: user.id,
+      groupIds: group,
+      endTime,
+    });
+
+    // Store study time locally in case of connection issues
+    const studySession = {
+      startTime: startTimeStamp,
+      endTime: endTime.toISOString(),
+      duration: Math.floor((endTime - new Date(startTimeStamp)) / 1000)
+    };
+    
+    const storedSessions = JSON.parse(localStorage.getItem('studySessions') || '[]');
+    storedSessions.push(studySession);
+    localStorage.setItem('studySessions', JSON.stringify(storedSessions));
+
+    setStartTimeStamp(null);
+  };
+
+  // Fullscreen handlers
+  const enterFullscreen = async () => {
+    try {
+      if (timerRef.current.requestFullscreen) {
+        await timerRef.current.requestFullscreen();
+      } else if (timerRef.current.webkitRequestFullscreen) {
+        await timerRef.current.webkitRequestFullscreen();
+      }
+    } catch (err) {
+      console.error("Fullscreen error:", err);
+      toast.error("Couldn't enter fullscreen mode");
+    }
+  };
+
+  const exitFullscreen = async () => {
+    try {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        await document.webkitExitFullscreen();
+      }
+    } catch (err) {
+      console.error("Exit fullscreen error:", err);
+    }
+  };
+
+  const handleFullscreenChange = () => {
+    if (!document.fullscreenElement && isRunning) {
+      handleTimerComplete();
+      toast.info("Timer stopped due to fullscreen exit");
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, [isRunning]);
+
+  const toggleTimer = async () => {
+    if (totalSeconds === 0) {
+      toast.error("Please set a time before starting");
+      return;
+    }
+
+    if (!isRunning) {
+      const startTime = new Date();
+      setStartTimeStamp(startTime.toISOString());
+      
+      try {
+        await enterFullscreen();
+        socket.emit("startTimer", {
+          userId: user.id,
+          groupIds: group,
+          startTime,
+          endTime: new Date(startTime.getTime() + totalSeconds * 1000),
+        });
+        setIsRunning(true);
+      } catch (err) {
+        toast.error("Failed to start timer");
+        console.error(err);
+      }
+    } else {
+      handleTimerComplete();
+    }
+  };
 
   useEffect(() => {
     const handleTimerStarted = (data) => {
@@ -52,175 +232,114 @@ const Timers = ({ socket, group }) => {
     };
   }, [socket]);
 
-  const handleScroll = (e, unit) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -1 : 1;
-
-    setTotalSeconds((prev) => {
-      let newTotal = prev;
-
-      switch (unit) {
-        case "hours":
-          newTotal += delta * 3600;
-          break;
-        case "minutes":
-          newTotal += delta * 60;
-          break;
-        default:
-          break;
-      }
-
-      return Math.max(0, Math.min(359999, newTotal));
-    });
-  };
-
-  const handleDirectInput = (unit, value) => {
-    const numValue = parseInt(value) || 0;
-    let newValue = Math.max(0, Math.min(unit === "hours" ? 23 : 59, numValue));
-
-    setTotalSeconds((prev) => {
-      const hours = unit === "hours" ? newValue : Math.floor(prev / 3600);
-      const minutes =
-        unit === "minutes" ? newValue : Math.floor((prev % 3600) / 60);
-
-      return hours * 3600 + minutes * 60;
-    });
-  };
-
-  const toggleTimer = () => {
-    if (totalSeconds === 0) return;
-
-    const startTime = new Date();
-    const endTime = new Date(startTime.getTime() + totalSeconds * 1000);
-
-    if (!isRunning) {
-      enterFullscreen();
-      socket.emit("startTimer", {
-        userId: user.id,
-        groupIds: group,
-        startTime,
-        endTime,
-      });
-      console.log("Timer Started");
-    } else {
-      exitFullscreen();
-      socket.emit("pauseTimer", {
-        userId: user.id,
-        groupIds: group,
-        endTime: new Date(),
-      });
-      console.log("Timer Paused");
-    }
-
-    setIsRunning(!isRunning);
-  };
-
-  const resetTimer = () => {
-    setIsRunning(false);
-    setTotalSeconds(0);
-    exitFullscreen();
-  };
-
   const formatNumber = (num) => num.toString().padStart(2, "0");
 
-  // Fullscreen handling
-  const enterFullscreen = () => {
-    if (timerRef.current.requestFullscreen) {
-      timerRef.current.requestFullscreen();
-    } else if (timerRef.current.webkitRequestFullscreen) {
-      timerRef.current.webkitRequestFullscreen();
-    } else if (timerRef.current.mozRequestFullScreen) {
-      timerRef.current.mozRequestFullScreen();
-    } else if (timerRef.current.msRequestFullscreen) {
-      timerRef.current.msRequestFullscreen();
-    }
-  };
-
-  const exitFullscreen = () => {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
-    }
-  };
-
-  const handleFullscreenChange = () => {
-    if (!document.fullscreenElement) {
-      setIsRunning(false); // Pause the timer if fullscreen mode is exited
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-
-    return () => {
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-    };
-  }, []);
-// ""
-// bg-white/10 backdrop-blur-lg w-full sm:w-1/2 bg-gradient-to-br from-gray-800 via-gray-900 to-gray-400 rounded-2xl p-8 shadow-xl border border-white/20 
-return (
+  return (
     <div
       ref={timerRef}
-      className="group overflow-hidden  w-full sm:w-1/2  relative after:duration-500 before:duration-500  duration-500 hover:after:duration-500 hover:after:translate-x-24 hover:before:translate-y-12 hover:before:-translate-x-32 hover:duration-500 after:absolute after:w-24 after:h-24 after:bg-sky-700 after:rounded-full  after:blur-xl after:bottom-32 after:right-16 after:w-12 after:h-12  before:absolute before:w-20 before:h-20 before:bg-sky-400 before:rounded-full  before:blur-xl before:top-20 before:right-16 before:w-12 before:h-12 flex justify-center items-center  origin-bottom-right bg-neutral-900 rounded-2xl outline outline-slate-400 -outline-offset-8"
+      className={`time-picker w-full max-w-2xl mx-auto p-8 rounded-2xl ${
+        document.fullscreenElement 
+          ? "bg-neutral-900 text-white h-screen flex items-center justify-center"
+          : "bg-neutral-900 shadow-xl"
+      }`}
     >
       <div className="flex flex-col items-center space-y-8">
-        <div className="flex items-center space-x-2">
-          <Timer className="w-8 h-8 text-white" />
-          <h1 className="text-2xl font-bold text-white">Study Timer</h1>
+        {/* Timer Header */}
+        <div className="flex items-center space-x-3">
+          <TimerIcon className="w-6 h-6 text-violet-400" />
+          <h2 className="text-2xl font-bold text-white">
+            Study Timer
+          </h2>
         </div>
 
-        <div className="flex items-center text-6xl font-mono text-white">
-          {Object.entries(time).map(([unit, value], index) => (
-            <React.Fragment key={index}>
-              <div
-                className="relative w-24 h-24 flex items-center justify-center bg-white/5 rounded-lg cursor-pointer hover:bg-white/10 transition-colors"
-                onWheel={(e) => handleScroll(e, unit)}
-                onClick={() => setEditingField(unit)}
-              >
-                {editingField === unit ? (
-                  <input
-                    type="number"
-                    className="w-full h-full text-center bg-transparent outline-none"
-                    value={value}
-                    onChange={(e) => handleDirectInput(unit, e.target.value)}
-                    onBlur={() => setEditingField(null)}
-                    autoFocus
-                    disabled={isRunning}
-                  />
-                ) : (
-                  formatNumber(value)
+        {/* Timer Display */}
+        <div className="time-picker__content">
+          <div className="flex items-center justify-center gap-4">
+            {Object.entries(time).map(([unit, value], index) => (
+              <React.Fragment key={unit}>
+                <div
+                  className={`relative group ${isRunning ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                  onWheel={(e) => !isRunning && handleScroll(e, unit)}
+                  onClick={() => !isRunning && setEditingField(unit)}
+                >
+                  <label className="absolute -top-6 left-1/2 -translate-x-1/2 text-sm text-gray-400">
+                    {unit}
+                  </label>
+                  <div
+                    className={`w-24 h-24 flex items-center justify-center rounded-xl text-4xl font-mono transition-all ${
+                      isRunning 
+                        ? 'bg-neutral-800 text-gray-400'
+                        : 'bg-neutral-800 text-white hover:bg-neutral-700'
+                    }`}
+                  >
+                    {editingField === unit ? (
+                      <input
+                        type="number"
+                        className="w-16 bg-transparent text-center outline-none text-white"
+                        value={value}
+                        onChange={(e) => handleDirectInput(unit, e.target.value)}
+                        onBlur={() => setEditingField(null)}
+                        autoFocus
+                        disabled={isRunning}
+                      />
+                    ) : (
+                      formatNumber(value)
+                    )}
+                  </div>
+                </div>
+                {index < 1 && (
+                  <span className="text-4xl font-mono text-gray-400">
+                    :
+                  </span>
                 )}
-              </div>
-              {index < 1 && <span className="mx-2">:</span>}
-            </React.Fragment>
-          ))}
+              </React.Fragment>
+            ))}
+          </div>
         </div>
 
-        <div className="flex space-x-4">
+        {/* Control Buttons */}
+        <div className="flex space-x-6">
           <button
             onClick={toggleTimer}
-            className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             disabled={totalSeconds === 0}
+            className={`p-4 rounded-full transition-all ${
+              isRunning
+                ? 'bg-red-500 hover:bg-red-600'
+                : 'bg-violet-500 hover:bg-violet-600'
+            } ${
+              totalSeconds === 0 ? 'opacity-50 cursor-not-allowed' : ''
+            } text-white shadow-lg hover:shadow-xl`}
           >
             {isRunning ? (
-              <Pause className="w-6 h-6 text-white" />
+              <Pause className="w-6 h-6" />
             ) : (
-              <Play className="w-6 h-6 text-white" />
+              <Play className="w-6 h-6" />
             )}
           </button>
+          
           <button
             onClick={resetTimer}
-            className="p-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            className="p-4 rounded-full transition-all bg-neutral-800 hover:bg-neutral-700 text-gray-300 shadow-lg hover:shadow-xl"
           >
-            <RotateCcw className="w-6 h-6 text-white" />
+            <RotateCcw className="w-6 h-6" />
           </button>
         </div>
+
+        {/* Timer Status */}
+        {isRunning && (
+          <p className="text-sm text-gray-400">
+            Press ESC to exit fullscreen or click stop to end timer
+          </p>
+        )}
       </div>
+
+      {/* Error Toast Style Override */}
+      <style jsx global>{`
+        .toast-error {
+          background: #1f1f1f !important;
+          color: #fff !important;
+        }
+      `}</style>
     </div>
   );
 };

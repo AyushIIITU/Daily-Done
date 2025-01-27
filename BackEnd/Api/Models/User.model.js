@@ -8,8 +8,8 @@ const userSchema = new mongoose.Schema({
   skills: [
     {
       type: String,
-      required: true,
-      unique: true,
+      // required: true,
+      // unique: true,
     },
   ],
   avatar: {

@@ -54,7 +54,7 @@ function MemberCard({ member, type, socket, isOnline }) {
   }, [member?.id, socket, timerInterval]);
 
   return (
-    <div className="flex items-center p-3 w-80 h-28 bg-white rounded-md shadow-lg">
+    <div className="flex items-center p-3 mb-4 w-80 h-28 bg-white rounded-md shadow-lg">
       <div className="relative">
         <img className="w-12 h-12 rounded" src={member?.avatar} alt="" />
         <span
